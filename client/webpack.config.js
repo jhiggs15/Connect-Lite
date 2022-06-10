@@ -5,6 +5,9 @@ const htmlPlugin = new HtmlWebPackPlugin({
 });
 
 module.exports = {
+  devServer: {
+    historyApiFallback: true,
+  },
   mode: 'development',
     module: {
       rules: [
@@ -18,7 +21,8 @@ module.exports = {
         {
           test: /\.css$/,
           use: ["style-loader", "css-loader"]
-        }
+        },
+
       ]
     },
    plugins: [htmlPlugin]
