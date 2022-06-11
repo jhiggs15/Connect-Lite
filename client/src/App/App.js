@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {LoginOutlined, LogoutOutlined, UserOutlined, HomeOutlined} from '@ant-design/icons';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { Layout, Menu } from 'antd';
+import { Button, Layout, Menu } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;
-import { Authentication } from '../screens/Authentication/Authentication';
 import 'antd/dist/antd.css';
 import './App.css';
 import { Home } from '../screens/Home/Home';
@@ -21,58 +20,61 @@ function getItem(label, key, icon, children, type) {
   }
 
 
-const SideBar = () => {
+const CustomSider = () => {
     let navigate = useNavigate()
     const { isAuthenticated } = useAuth0()
 
     const siderItems = isAuthenticated ? [
             getItem("Home", '/', <HomeOutlined />),
             getItem("My Skills", '/skills', <UserOutlined />),
-            getItem("Sign Out", '/auth', <LogoutOutlined />)
         ]
         :
-        [ getItem("Login", '/auth', <LoginOutlined />) ]
+        [  ]
+
+    return (
+        <Sider >
+            <Menu onClick={(event) =>{navigate(event.key)}}   theme="dark" defaultSelectedKeys={"/"} mode="inline" items={siderItems} />
+        </Sider>
+    )
+}
+
+const CustomHeader = () => {
+    const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0()
+
+    const authItem = isAuthenticated ? 
+        [ getItem("Sign Out", '1', <LogoutOutlined />)]
+        :
+        [ getItem("Login", '2', <LoginOutlined />) ]
 
 
     return (
-        <Sider>
-            <Menu onClick={(event) =>{navigate(event.key)}}   theme="dark" defaultSelectedKeys={[isAuthenticated ? "/" : "/auth"]} mode="inline" items={siderItems} />
-        </Sider>
+
+        <Header>
+            <h1 className='title'> Connect </h1>
+            <Menu onClick={() =>{ isAuthenticated ? logout() : loginWithRedirect() }} theme="dark" mode="inline" items={authItem} />
+        </Header>
     )
-
-
-}
-
-const RequireAuth = ({children}) => {
-    const { isAuthenticated } = useAuth0()
-
-    useEffect()
-    if(!isAuthenticated) 
-        return <Navigate to="/auth" />
-
-    return component
 }
 
 
 export const App = () => {
 
-
     return (
-        // Add secrets
-        <Auth0Provider>
+        <Auth0Provider
+            domain= {process.env.AUTH0_DOMAIN}
+            clientId= {process.env.AUTH0_CLIENTID}
+            redirectUri="http://localhost:8080/"
+         >
             <Router>
                 <Layout>
-                    <Header >
-                        <h1 className='title'> Connect </h1>
-                    </Header>
+                    <CustomHeader />
 
                     <Layout style={{"minHeight": "100vh"}}>
-                        <SideBar/>
+                        <CustomSider/>
 
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/skills" element={<Skills />} />
-                            <Route path="/auth" element={<Authentication />} />
                         </Routes>
 
                         <Footer>
@@ -87,6 +89,3 @@ export const App = () => {
 
       );
 }
-
-
-
