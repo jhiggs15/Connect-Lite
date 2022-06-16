@@ -8,8 +8,9 @@ import { Home } from '../screens/Home/Home';
 import { Skills } from '../screens/Skills/Skills';
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { Landing } from '../screens/Landing/Landing';
-import { CustomHeader, CustomSider } from '../components/CustomAnt/CustomAnt';
 import { ApolloClient, InMemoryCache,ApolloProvider, useQuery, gql } from "@apollo/client";
+import { CustomHeader } from '../components/CustomAnt/CustomHeader/CustomHeader';
+import { CustomSider } from '../components/CustomAnt/CustomSider/CustomSider';
 
 // initializes the apollo client, connecting us to the Neo4J db
 const apolloClient = new ApolloClient({
@@ -41,7 +42,7 @@ export const App = () => {
                         <CustomHeader />
 
                         <Layout style={{"minHeight": "100vh"}}>
-                            <CustomSider/>
+                            <CustomSider />
                             <Layout style={{justifyContent : "space-between", height : "100vh"}}>
                                 <div style={{ backgroundColor : "white", height: "100vh", padding : "24px 0 0 0"}}>
                                     <Routes>

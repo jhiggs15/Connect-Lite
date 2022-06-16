@@ -2,3 +2,4 @@ client/node_modules
 client/node_modules/*
 client/env-setup.sh
 client/env-setup.bat
+.vscode
