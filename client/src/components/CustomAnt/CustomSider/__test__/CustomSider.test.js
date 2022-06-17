@@ -4,7 +4,7 @@ import { CustomSider } from '../CustomSider';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { render, cleanup, fireEvent } from '@testing-library/react';
+import { render, cleanup, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom'
 import { act } from 'react-dom/test-utils';
 
@@ -37,15 +37,24 @@ describe('setup', () => {
     // home and skill menu items
     test('if the component renders w/ Auth', () => {
         configure(true, "/")
-        const {getByTestId} = render(
-            <Layout>
-                <CustomSider />
-            </Layout>
-        )
-        expect(getByTestId("CustomSider-Sider")).toBeInTheDocument()
-        expect(getByTestId("CustomSider-Menu")).toBeInTheDocument()
-        expect(getByTestId("CustomSider-MenuItem-Home")).toBeInTheDocument()
-        expect(getByTestId("CustomSider-MenuItem-Skills")).toBeInTheDocument()
+        act(() => {
+            const {getByTestId} = render(
+                <Layout>
+                    <CustomSider />
+                </Layout>
+            )
+        })
+
+        // waits for component to finish rendering
+        waitFor(() => {
+            expect(getByTestId("CustomSider-Sider")).toBeInTheDocument()
+            expect(getByTestId("CustomSider-Menu")).toBeInTheDocument()
+            expect(getByTestId("CustomSider-MenuItem-Home")).toBeInTheDocument()
+            expect(getByTestId("CustomSider-MenuItem-Skills")).toBeInTheDocument()
+        })
+
+
+
     });
 
     // checks to make sure all compoennts are rendered when a user is not logged in
@@ -57,10 +66,18 @@ describe('setup', () => {
                 <CustomSider />
             </Layout>
         )
-        expect(getByTestId("CustomSider-Sider")).toBeInTheDocument()
-        expect(getByTestId("CustomSider-Menu")).toBeInTheDocument()
-        expect(queryByTestId("CustomSider-MenuItem-Home")).toBeNull()
-        expect(queryByTestId("CustomSider-MenuItem-Skills")).toBeNull()
+
+        // waits for component to finish rendering
+        // not needed in other tests because render is not done within the test
+        waitFor(() => {
+            expect(getByTestId("CustomSider-Sider")).toBeInTheDocument()
+            expect(getByTestId("CustomSider-Menu")).toBeInTheDocument()
+            expect(queryByTestId("CustomSider-MenuItem-Home")).toBeNull()
+            expect(queryByTestId("CustomSider-MenuItem-Skills")).toBeNull()
+        })
+
+
+
     });
 })
 
@@ -83,7 +100,7 @@ describe("Selection of Menu", () => {
 
     test('home is selected', () => {
         const getByTestId = configure(true, "/home")
-        
+
         const home = getByTestId("CustomSider-MenuItem-Home")
         const skills = getByTestId("CustomSider-MenuItem-Skills")
         expect(home).toHaveClass("ant-menu-item-selected")
@@ -115,7 +132,6 @@ describe("Selection of Menu", () => {
  */
  describe("on click", () => {
     // common configure options
-    
     const configure = (startPathName, endPathName) => {
         useAuth0.mockReturnValue({isAuthenticated : true})
         useLocation.mockReturnValueOnce({startPathName}).mockReturnValueOnce({endPathName})
