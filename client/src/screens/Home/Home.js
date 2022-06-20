@@ -1,12 +1,9 @@
-import { Button } from 'antd';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import { getUser } from '../../queries/getUser';
 import { useQuery } from '@apollo/client';
-import { useAuth0 } from '@auth0/auth0-react';
 import { ApolloWrapper } from '../../components/ApolloWrapper/ApolloWrappers';
-import { getSkills } from '../../queries/getSkills';
 
 export const Home = () => {
     let navigate = useNavigate()

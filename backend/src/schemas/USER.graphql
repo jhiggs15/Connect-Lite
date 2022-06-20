@@ -1,0 +1,4 @@
+type USER {
+    name: String
+    skills: [SKILL!]! @relationship(type: "HAS_SKILL", direction: OUT)
+}

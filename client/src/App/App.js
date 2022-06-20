@@ -46,6 +46,7 @@ const RequireAuth = ({ component }) => {
     const {getAccessTokenSilently} = useAuth0()
     const [hasToken, setTokenState] = useState(false)
 
+    // TODO : figure out way to make this run as a time in the background
     useEffect( () => {
         const updateToken = async () => {
             const token = await getAccessTokenSilently()
