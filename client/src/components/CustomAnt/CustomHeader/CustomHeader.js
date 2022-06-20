@@ -17,12 +17,18 @@ export const CustomHeader = () => {
         [getItem("Login", '2', <LoginOutlined />, "CustomHeader-MenuItem-Login")]
 
 
+    const customLogout = () => {
+        localStorage.removeItem('token')
+        logout()
+    }
+
+
     return (
 
         <Header data-testid="CustomHeader-Header">
             <h1 data-testid="CustomHeader-Title" className='title'> Connect </h1>
             <Menu data-testid="CustomHeader-Menu" selectable={false} theme="dark" mode="inline" items={authItem} 
-                onClick={() => isAuthenticated ? logout() : loginWithRedirect({redirectUri: "http://localhost:8080/home"})}  />
+                onClick={() => isAuthenticated ? customLogout() : loginWithRedirect({redirectUri: "http://localhost:8080/home"})}  />
         </Header>
     )
 }

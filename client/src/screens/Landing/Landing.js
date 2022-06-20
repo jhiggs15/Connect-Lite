@@ -10,35 +10,12 @@ import { getSkills } from '../../queries/getSkills';
 
 export const Landing = () => {
 
-    const { user } = useAuth0()
-
-    const { loading, error, data } = useQuery(getUser)
-    const { loading: loading2, error: error2, data: data2 } = useQuery(getSkills)
-
-
-    
 
     return (
         <div>
-            <ApolloWrapper loadingStates={[loading, loading2]} errorStates={[error, error2]}> 
-                <div>
-                    { JSON.stringify(loading) }
-                </div>
-                <div>
-                    { JSON.stringify(data) }
-                </div>
-                <div>  
-                    { JSON.stringify(user) }
-                </div>
-            </ApolloWrapper>
-
+            <h1> Welcome to Connect-Lite </h1>
+            <p> This app was created to learn the GRAND stack.</p>
         </div>
-    )
-    // return (
-    //     <div>
-    //         <h1> Welcome to Connect-Lite </h1>
-    //         <p> This app was created to learn the GRAND stack.</p>
-    //     </div>
         
-    // )
+    )
 }

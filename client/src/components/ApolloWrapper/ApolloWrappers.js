@@ -7,8 +7,6 @@ import { Error } from "../../screens/Loading/Error";
  * If the app is not in any of these states it renders the child components
  */
 export const ApolloWrapper = ({loadingStates, errorStates, children}) => {
-
-    console.log(errorStates)
     // TODO : add loading screen
     if (loadingStates.some(state => state)) return <Loading/>;
     // TODO add error screen
