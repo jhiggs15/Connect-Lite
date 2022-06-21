@@ -1,12 +1,6 @@
 import 'antd/dist/antd.css';
 import './Landing.css';
 import React from 'react';
-import { getUser } from '../../queries/getUser';
-import { useQuery } from '@apollo/client';
-
-import { useAuth0 } from '@auth0/auth0-react';
-import { ApolloWrapper } from '../../components/ApolloWrapper/ApolloWrappers';
-import { getSkills } from '../../queries/getSkills';
 
 export const Landing = () => {
 

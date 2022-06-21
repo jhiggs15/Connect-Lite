@@ -18,7 +18,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
     const siderItems = isAuthenticated ? [
             getItem("Home", '/home', <HomeOutlined />, "CustomSider-MenuItem-Home"),
-            getItem("My Skills", '/skills', <UserOutlined />, "CustomSider-MenuItem-Skills"),
+            getItem("Skills", '/skills', <UserOutlined />, "CustomSider-MenuItem-Skills"),
         ]
         :
         [  ]

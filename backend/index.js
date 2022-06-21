@@ -4,16 +4,18 @@ import neo4j from "neo4j-driver"
 import fs from 'fs'
 import path from 'path'
 import express from 'express';
-import { jwtCheck } from "./src/authentication/authentication.js";
+import { jwtCheck } from "./src/middleware/authentication.js";
+import cors from 'cors'
 
 const port = 4000;
 const app = express();
 
 app.use(jwtCheck)
 
+
 const getTypeDefs = () => {
-    const schemaPath = "./src/schemas"
-    const schemaFiles = ["USER", "SKILL"]
+    const schemaPath = "./src"
+    const schemaFiles = ["SCHEMA"]
     const schemaExtension = [".graphql"]
 
     let schemas = []
@@ -33,10 +35,18 @@ const neoSchema = await new Neo4jGraphQL({ typeDefs : getTypeDefs(), driver }).g
 
 const server = new ApolloServer({ 
     schema: neoSchema,
-    origin : ["http://localhost:8080"]
+    cache: "bounded",
+    csrfPrevention: true
 });
 
 await server.start()
+
+const corsOptions = {
+    origin : ["http://localhost:8080", "https://studio.apollographql.com"],
+    credentials: true
+}
+
+app.use(cors(corsOptions))
 
 server.applyMiddleware({app})
 

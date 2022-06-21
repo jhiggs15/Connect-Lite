@@ -13,7 +13,7 @@ import { setContext } from '@apollo/client/link/context'
 import { CustomHeader } from '../components/CustomAnt/CustomHeader/CustomHeader';
 import { CustomSider } from '../components/CustomAnt/CustomSider/CustomSider';
 import { Redirect } from '../screens/Loading/Redirect';
-import { Loading } from '../screens/Loading/Loading';
+import { Authentication } from '../screens/Authentication/Authentication';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
@@ -43,23 +43,7 @@ const RequireAuth = ({ component }) => {
         onRedirecting: () => <Redirect />,
     });
 
-    const {getAccessTokenSilently} = useAuth0()
-    const [hasToken, setTokenState] = useState(false)
-
-    // TODO : figure out way to make this run as a time in the background
-    useEffect( () => {
-        const updateToken = async () => {
-            const token = await getAccessTokenSilently()
-            localStorage.setItem('token', token)
-            setTokenState(true)
-        }
-
-        updateToken()
-
-    }, [getAccessTokenSilently])
-
-
-    return hasToken ? <Component /> : <Loading/>
+    return <Component/>
 }
 /**
  * When accessing a route that is requires auth and the user is a visitor
@@ -69,12 +53,12 @@ const RequireAuth = ({ component }) => {
 const Auth0RedirectCallback = ({ children, ...props }) => {
     const navigate = useNavigate();
     const onRedirectCallback = (appState) => {
-        navigate((appState && appState.returnTo) || window.location.pathname);
+        navigate(`/auth${(appState && appState.returnTo) || window.location.pathname}`)
     };
     return (
-      <Auth0Provider onRedirectCallback={onRedirectCallback} {...props}>
-        {children}
-      </Auth0Provider>
+        <Auth0Provider onRedirectCallback={onRedirectCallback} {...props}>
+            {children}
+        </Auth0Provider>
     );
 }
 
@@ -101,6 +85,7 @@ export const App = () => {
                                     <Routes>
                                         <Route path="/" element={<Landing />} />
                                         <Route path="/home" element={<RequireAuth component={Home} />}/>
+                                        <Route path="/auth/:redirectUri" element={<Authentication />}/>
                                         <Route path="/skills" element={<RequireAuth component={Skills} />} />
                                     </Routes>
                                 </div>
