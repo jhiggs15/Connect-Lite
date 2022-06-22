@@ -4,12 +4,12 @@ import 'antd/dist/antd.css';
 import { getUser } from '../../graphQLOps/queries/getUser';
 import { useQuery } from '@apollo/client';
 import { ApolloWrapper } from '../../components/ApolloWrapper/ApolloWrappers';
+import { doesUserExist } from '../../graphQLOps/queries/doesUserExist';
+import { createArgs } from '../../graphQLOps/createInputs';
 
 export const Home = () => {
-    let navigate = useNavigate()
-
-    const { loading, error, data } = useQuery(getUser)
-
+    const input = {name : "Jhiggs"}
+    const { loading, error, data } = useQuery(doesUserExist, createArgs(input))
 
     return (
         <div>

@@ -5,13 +5,13 @@ import 'antd/dist/antd.css';
 import { ApolloWrapper } from '../../components/ApolloWrapper/ApolloWrappers';
 import { useMutation } from '@apollo/client';
 import { createUser } from '../../graphQLOps/mutation/createUser';
-import { createMutationArgs } from '../../graphQLOps/createInputs';
+import { createArgs } from '../../graphQLOps/createInputs';
 
 
 export const Skills = () => {
     let navigate = useNavigate()
 
-    const [createTheUser, { data, loading, error }] = useMutation(createUser);
+    const [createTheUser, { loading, error }] = useMutation(createUser);
 
 
     return (
@@ -21,7 +21,7 @@ export const Skills = () => {
             </h1>
             <button onClick={() => {
                 try{
-                    createTheUser(createMutationArgs({name : "jdawgl"}))
+                    createTheUser(createArgs({name : "jdawgl"}))
                 } catch(e) {
                     console.error(error)
                 }

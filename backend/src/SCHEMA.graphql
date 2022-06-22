@@ -5,7 +5,6 @@ enum Role{
 
 type User {
     userID: ID
-    token: String
     email: String 
     name: String
     roles: [Role!]!

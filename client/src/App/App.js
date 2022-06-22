@@ -14,6 +14,7 @@ import { CustomHeader } from '../components/CustomAnt/CustomHeader/CustomHeader'
 import { CustomSider } from '../components/CustomAnt/CustomSider/CustomSider';
 import { Redirect } from '../screens/Loading/Redirect';
 import { Authentication } from '../screens/Authentication/Authentication';
+import { Loading } from '../screens/Loading/Loading';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
@@ -40,7 +41,7 @@ const apolloClient = new ApolloClient({
 const RequireAuth = ({ component }) => {
     const Component = withAuthenticationRequired(component, {
         // Show a message while the user waits to be redirected to the login page.
-        onRedirecting: () => <Redirect />,
+        onRedirecting: () => <Loading />,
     });
 
     return <Component/>

@@ -1,15 +1,6 @@
-export const createMutationArgs = (args) => {
+export const createArgs = ({input = {}, where = {}} = {}) => {
     return {variables : {
-        input : args
+        input,
+        where
     }}
-}
-
-export const updateMutationArgs = (where, update) => {
-    return {variables : {
-        input : args
-    }}
-}
-
-export const createQueryArgs = (args) => {
-    return {}
 }
