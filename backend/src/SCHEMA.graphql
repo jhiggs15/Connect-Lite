@@ -8,7 +8,7 @@ type User {
     email: String @unique
     name: String
     roles: [Role!]!
-    skills: [Skill!]! @relationship(type: "HAS_SKILL", direction: OUT)
+    skills: [Skill!]! @relationship(type: "HAS_SKILL", direction: OUT, properties: "HasSkill") 
     skillDesires: [Skill!]! @relationship(type: "WANTS_TO_LEARN", direction: OUT)
 }
 
@@ -17,6 +17,10 @@ type Skill @auth(rules: [{ operations: [CREATE, UPDATE], roles: ["create:skill"]
     name: String @unique
     description: String
     imageURL: String
+}
+
+interface HasSkill @relationshipProperties {
+    rating: Int!
 }
 
 
