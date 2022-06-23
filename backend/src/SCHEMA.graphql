@@ -4,17 +4,19 @@ enum Role{
 }
 
 type User {
-    userID: ID
-    email: String 
+    userID: ID @id
+    email: String @unique
     name: String
     roles: [Role!]!
     skills: [Skill!]! @relationship(type: "HAS_SKILL", direction: OUT)
     skillDesires: [Skill!]! @relationship(type: "WANTS_TO_LEARN", direction: OUT)
 }
 
-type Skill {
-    skillID: ID
-    name: String
+type Skill @auth(rules: [{ operations: [CREATE, UPDATE], roles: ["create:skill"]}, ]){
+    skillID: ID @id
+    name: String @unique
     description: String
     imageURL: String
 }
+
+

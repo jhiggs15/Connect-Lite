@@ -79,19 +79,17 @@ export const App = () => {
                     <Layout>
                         <CustomHeader />
 
-                        <Layout style={{"minHeight": "100vh"}}>
+                        <Layout >
                             <CustomSider />
-                            <Layout style={{justifyContent : "space-between", height : "100vh"}}>
-                                <div style={{ backgroundColor : "white", height: "100vh", padding : "24px 0 0 0"}}>
-                                    <Routes>
-                                        <Route path="/" element={<Landing />} />
-                                        <Route path="/home" element={<RequireAuth component={Home} />}/>
-                                        <Route path="/auth/:redirectUri" element={<Authentication />}/>
-                                        <Route path="/skills" element={<RequireAuth component={Skills} />} />
-                                    </Routes>
-                                </div>
+                            <Layout style={{ minHeight : "100vh", width: "100%", padding: 10, }}>
+                                <Routes>
+                                    <Route path="/" element={<Landing />} />
+                                    <Route path="/home" element={<RequireAuth component={Home} />}/>
+                                    <Route path="/auth/:redirectUri" element={<Authentication />}/>
+                                    <Route path="/skills" element={<RequireAuth component={Skills} />} />
+                                </Routes>
 
-                                <Footer>
+                                <Footer style={{"marginBottom" :0 }}>
                                     <h4>Forward Motion Program Summer 2022</h4>
                                     <h5>Created by John Higgins at Jahnel Group</h5>
                                 </Footer>
