@@ -1,6 +1,7 @@
-export const createArgs = ({input = {}, where = {}} = {}) => {
+export const createArgs = ({input = {}, where = {}, connect={}} = {}) => {
     return {variables : {
         input,
-        where
+        where,
+        connect
     }}
 }

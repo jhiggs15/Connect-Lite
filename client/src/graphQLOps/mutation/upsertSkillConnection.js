@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { createArgs } from '../createInputs';
 /*
 {
   "where": {
@@ -21,6 +22,23 @@ import { gql } from '@apollo/client';
 }
 
 */
+
+export const createUpsertSkillConnectionArgs = (email, skillName, rating)=> {
+  const where = {email}
+  const connect = {
+    skills: [{
+      where: {
+        node :{
+            name : skillName
+        }
+      },
+      edge: {
+        rating
+      }
+    }]
+  }
+  return createArgs({where, connect})
+}
 export const upsertSkillConnection = gql`
     mutation UpdateUsers($connect: UserConnectInput, $where: UserWhere) {
         updateUsers(connect: $connect, where: $where) {

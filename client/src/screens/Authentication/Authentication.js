@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react"
 import { useState } from "react"
 import { Loading } from "../Loading/Loading"
 import { useNavigate, useParams } from "react-router-dom"
-import { doesUserExist } from "../../graphQLOps/queries/doesUserExist"
+import { createDoesUserExistArgs, doesUserExist } from "../../graphQLOps/queries/doesUserExist"
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client"
 import { createArgs } from "../../graphQLOps/createInputs"
 import { createUser } from "../../graphQLOps/mutation/createUser"
@@ -32,7 +32,6 @@ export const Authentication = (props) => {
                 await doesUserExistQuery(createArgs({where}))
                 // set the components state to the token have being updated
                 setHasUpdatedToken(true)
-                
             }
         }
 
@@ -43,18 +42,14 @@ export const Authentication = (props) => {
     // creates the user if they do not already exist within the database
     useEffect( () => {
         const createUserIfNecessary = async () => {
+
             // ensure that all steps have been completed up to this point
             // token has been updated, we hace determined if the user exists in the database, the createUser mutation ahs been created
             if(hasUpdatedToken && !doesUserExistLoading && !createUserLoading) {
                 // if there are no users with the current users email create a new one
                 if(doesUserExistData.users.length == 0) {
                     // create a new user
-                    const input = {
-                        "email": user.email,
-                        "name": user.name,
-                        "roles": ["USER"]
-                    }
-                    await createUserMutation(createArgs({input}))
+                    await createUserMutation(createUserArgs(user.email, user.name))
                 }
                 // redirect the user to the page they were on
                 navigate(`/${redirectUri}`)

@@ -15,6 +15,7 @@ import { CustomSider } from '../components/CustomAnt/CustomSider/CustomSider';
 import { Redirect } from '../screens/Loading/Redirect';
 import { Authentication } from '../screens/Authentication/Authentication';
 import { Loading } from '../screens/Loading/Loading';
+import { MySkills } from '../screens/Skills/MySkills';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
@@ -89,7 +90,7 @@ export const App = () => {
                                     <Route path="/skills" element={<RequireAuth component={Skills} />} />
                                 </Routes>
 
-                                <Footer style={{"marginBottom" :0 }}>
+                                <Footer>
                                     <h4>Forward Motion Program Summer 2022</h4>
                                     <h5>Created by John Higgins at Jahnel Group</h5>
                                 </Footer>

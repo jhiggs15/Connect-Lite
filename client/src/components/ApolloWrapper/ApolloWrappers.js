@@ -6,11 +6,12 @@ import { Error } from "../../screens/Loading/Error";
  * Provides a central component to handle error and loading states
  * If the app is not in any of these states it renders the child components
  */
-export const ApolloWrapper = ({loadingStates, errorStates, functions, children}) => {
+export const ApolloWrapper = ({loadingStates, errorStates, nullStates, children}) => {
+    if ( nullStates && nullStates.some(state => typeof state === 'undefined')) return <Loading/>;
     // TODO : add loading screen
-    if (loadingStates.some(state => state)) return <Loading/>;
+    if (loadingStates && loadingStates.some(state => state)) return <Loading/>;
     // TODO add error screen
-    if (errorStates.some(error => error)) return <Error error={errorStates.find(error => error !== null)}/>;
+    if (errorStates && errorStates.some(error => error)) return <Error error={errorStates.find(error => error !== null)}/>;
     return children
 
     

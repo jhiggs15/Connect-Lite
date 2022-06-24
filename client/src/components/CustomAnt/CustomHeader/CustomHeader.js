@@ -5,12 +5,16 @@ const { Header } = Layout;
 import 'antd/dist/antd.css';
 import { useAuth0 } from "@auth0/auth0-react";
 import { getItem } from '../getItem';
+import { useApolloClient } from "@apollo/client";
+
 
 /**
  * A component that updates based on if the user is logged in. If they are logged in provides option to sign out, otherwise lets the visitor sign in
  */
 export const CustomHeader = () => {
     const { loginWithRedirect, logout, user, isAuthenticated  } = useAuth0()
+    const client = useApolloClient();
+
     const authItem = isAuthenticated ? 
         [getItem("Sign Out", '1', <LogoutOutlined />, "CustomHeader-MenuItem-SignOut")]
         :
@@ -19,7 +23,15 @@ export const CustomHeader = () => {
 
     const customLogout = () => {
         localStorage.removeItem('token')
-        logout()
+        console.log(client)
+        client.cache.reset().then(() => {
+            logout()
+
+        })
+
+
+
+        
     }
 
 
