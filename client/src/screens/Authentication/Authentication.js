@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { createDoesUserExistArgs, doesUserExist } from "../../graphQLOps/queries/doesUserExist"
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client"
 import { createArgs } from "../../graphQLOps/createInputs"
-import { createUser } from "../../graphQLOps/mutation/createUser"
+import { createUser, createUserArgs } from "../../graphQLOps/mutation/createUser"
 
 export const Authentication = (props) => {
 

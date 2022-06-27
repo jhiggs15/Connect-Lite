@@ -1,35 +1,24 @@
-import { Skill } from "./Skill"
+import { Skill } from "./Skill/Skill"
 import React, { useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import { Col, Row } from "antd";
 
-export const SkillList = ({skillsData, connectUserAndSkill, doesNotHaveRating}) => {
-    // TODO this is bad and I shouldnt do this
-    const convertUserSkills = (userSkillData, hasRating) => {
-        if(!doesNotHaveRating) {
-            const skills = userSkillData.users[0].skills
-            const ratings = userSkillData.users[0].skillsConnection.edges
-            return skills.map(
-                (skillData, index) => (
-                    <Col key={index + 1} offset={1} style={{padding : "0 0 10 0"}} >
-                        <Skill rating={ratings[index].rating} key={(index + 1) + skillsData.length} skillData={skillData} hasAdded={true} connectUserAndSkill={connectUserAndSkill}  />
-                    </Col>))
-        }
-        else {
-            // todo fix it so proper rating is returned and I can use ^
-            return skillsData.skills.map(
-                (skillData, index) => (
-                    <Col key={index + 1} offset={1} style={{padding : "0 0 10 0"}} >
-                        <Skill rating={1} key={(index + 1) + skillsData.length} skillData={skillData} hasAdded={false} connectUserAndSkill={connectUserAndSkill}  />
-                    </Col>))
-        }
-
-
-
+export const SkillList = ({skillsData, connectUserAndSkill, disconnectSkill, setSkillToEdit, setIsModalVisible, leftAlign}) => {
+    // TODO Should figure something out here so we do not have to do these if statements
+    const convertUserSkills = () => {
+        let data
+        if(skillsData.hasOwnProperty("getAllSkills")) data = skillsData.getAllSkills
+        if(skillsData.hasOwnProperty("getMySkills")) data = skillsData.getMySkills
+        return data.map(
+            (skillData, index) => (
+                <Col key={index + 1} offset={1} style={{padding : "0 0 10 0"}} >
+                    <Skill disconnectSkill={disconnectSkill} setIsModalVisible={setIsModalVisible} rating={skillData.rating} key={(index + 1) + skillsData.length} skillData={skillData}
+                        hasAdded={!(skillData.rating == null)} connectUserAndSkill={connectUserAndSkill} setSkillToEdit={setSkillToEdit}  />
+                </Col>))
     }
 
     return (
-        <Row gutter={[16, 16]} style={{margin: 0}} justify={"center"} align={"middle"}>
+        <Row gutter={[16, 16]} style={{margin: 0}} justify={leftAlign ? "start" : "center"} align={"middle"}>
             {convertUserSkills(skillsData)}
         </Row>
     )

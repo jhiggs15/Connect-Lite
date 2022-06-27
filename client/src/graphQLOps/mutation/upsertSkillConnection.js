@@ -40,7 +40,7 @@ export const createUpsertSkillConnectionArgs = (email, skillName, rating)=> {
   return createArgs({where, connect})
 }
 export const upsertSkillConnection = gql`
-    mutation UpdateUsers($connect: UserConnectInput, $where: UserWhere) {
+    mutation UpdateUserSkillConnection($connect: UserConnectInput, $where: UserWhere) {
         updateUsers(connect: $connect, where: $where) {
         users {
             skills {

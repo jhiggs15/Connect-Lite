@@ -16,24 +16,31 @@ skill Data :
       }
 */
 
-export const Skill = ({rating, skillData, hasAdded, connectUserAndSkill}) => {
+// TODO should we extract data from skillData and have it as use State varibales?
+export const Skill = ({skillData, hasAdded, connectUserAndSkill, disconnectSkill, setSkillToEdit, setIsModalVisible}) => {
 
     const {user} = useAuth0()
     const isAdmin = user.hasOwnProperty("https://Connect-Lite-Roles.com/Role") ? true : false
 
-
     const [hasAddedSkill, setHasAddedSkill] = useState(hasAdded)
-    const [ratingState, setRatingState] = useState(rating)
+    const [ratingState, setRatingState] = useState(skillData.rating)
     
     useEffect(() => {
-        setRatingState(rating)
-    }, [rating])
+        setRatingState(skillData.rating)
+    }, [skillData])
 
-    const getActions = (isAdmin) => {
+
+    const getActions = () => {
         const actions = []
-        if(isAdmin) actions.push(<Edit/>)
-        if(hasAddedSkill) actions.push(<Rating skillName={skillData.name} rating={ratingState} setRating={setRatingState} shouldShowPopup={true} connectUserAndSkill={connectUserAndSkill} />)
-        actions.push(<Add skillName={skillData.name} hasAddedSkill={hasAddedSkill} setHasAddedSkill={setHasAddedSkill} rating={ratingState} setRating={setRatingState} connectUserAndSkill={connectUserAndSkill} />)
+        if(isAdmin) actions.push( 
+            <EditOutlined onClick={() =>{ setSkillToEdit(skillData); setIsModalVisible("edit");}} />)
+        if(hasAddedSkill) 
+            actions.push(
+                <Rating skillName={skillData.name} rating={ratingState} setRating={setRatingState} 
+                    shouldShowPopup={true} connectUserAndSkill={connectUserAndSkill} />)
+        actions.push(
+            <Add disconnectSkill={disconnectSkill} skillName={skillData.name} hasAddedSkill={hasAddedSkill} setHasAddedSkill={setHasAddedSkill} 
+                rating={ratingState} setRating={setRatingState} connectUserAndSkill={connectUserAndSkill} />)
 
         return actions
     }
@@ -44,7 +51,7 @@ export const Skill = ({rating, skillData, hasAdded, connectUserAndSkill}) => {
     return (
         <>
             <Card  style={{width: 240, padding : 10}} cover={<Image alt={skillData.name + " image"} width={200} height={200} src={skillData.imageURL} preview={false} fallback={scaryLink}/>}
-                actions = {getActions(isAdmin, hasAddedSkill)} refresh={rating}>
+                actions = {getActions()}>
                 <Meta title={skillData.name} description={skillData.description} />
             </Card>
         </>

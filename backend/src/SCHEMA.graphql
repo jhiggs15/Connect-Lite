@@ -1,13 +1,7 @@
-enum Role{
-    ADMIN
-    USER
-}
-
 type User {
     userID: ID @id
     email: String @unique
     name: String
-    roles: [Role!]!
     skills: [Skill!]! @relationship(type: "HAS_SKILL", direction: OUT, properties: "HasSkill") 
     skillDesires: [Skill!]! @relationship(type: "WANTS_TO_LEARN", direction: OUT)
 }
@@ -21,6 +15,33 @@ type Skill @auth(rules: [{ operations: [CREATE, UPDATE], roles: ["create:skill"]
 
 interface HasSkill @relationshipProperties {
     rating: Int!
+}
+
+type MySkill {
+    name: String
+    description: String
+    imageURL: String
+    rating: Int
+}
+type Query {
+    getMySkills(email: String): [MySkill]
+        @cypher(
+            statement: """
+            MATCH (:User {email: $email})-[skillRelationship]->(skill)
+            RETURN {name: skill.name, description: skill.description, imageURL: skill.imageURL, rating: skillRelationship.rating}
+            """
+        )
+}
+
+type Query {
+    getAllSkills(email: String) : [MySkill]
+        @cypher(
+            statement: """
+            MATCH (allSkill: Skill)
+            OPTIONAL MATCH (:User {email: $email})-[skillRelationship]->(allSkill)
+            RETURN {name: allSkill.name, description: allSkill.description, imageURL: allSkill.imageURL, rating: skillRelationship.rating}
+            """
+        )
 }
 
 

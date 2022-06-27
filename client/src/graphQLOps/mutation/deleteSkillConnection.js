@@ -19,23 +19,23 @@ import { createArgs } from '../createInputs';
 }
 */
 
-export const createUpsertSkillConnectionArgs = (email, skillName)=> {
+export const disconnectSkillConnectionArgs = (email, skillName)=> {
   const where = {email}
-  const connect = {
-    "skills": [
-        {
-          "where": {
-            "node": {
-              "name": skillName
-            }
+  const disconnect = {
+    skills: [
+      {
+        where: {
+          node :{
+            name : skillName
           }
         }
-      ]
+      }
+    ]
   }
-  return createArgs(where, connect)
+  return createArgs({where, disconnect})
 }
-export const upsertSkillConnection = gql`
-    mutation DeleteUsers($disconnect: UserDisconnectInput, $where: UserWhere) {
+export const disconnectSkill = gql`
+    mutation DisconnectSkill($disconnect: UserDisconnectInput, $where: UserWhere) {
     updateUsers(disconnect: $disconnect, where: $where) {
         info {
         relationshipsDeleted

@@ -5,24 +5,16 @@ import { gql } from '@apollo/client';
 import { createArgs } from '../createInputs';
 
 export const getSkillByUserArgs = (email) => {
-    const where ={email}
-    return createArgs({where})
+    return {variables : {email}}
 }
 
 export const getSkillsByUser = gql`
-    query Query($where: UserWhere) {
-    users(where: $where) {
-        skills {
-        skillID
-        name
-        description
-        imageURL
-        }
-        skillsConnection {
-        edges {
-            rating
-        }
-        }
-    }
-    }
+query GetMySkills($email: String) {
+  getMySkills(email: $email) {
+    name
+    description
+    imageURL
+    rating
+  }
+}
 `

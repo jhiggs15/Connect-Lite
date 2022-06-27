@@ -12,7 +12,7 @@ export const createSkillArgs = (name, description, imageURL) => {
 }
 
 export const createSkill = gql`
-mutation Mutation($input: [SkillCreateInput!]!) {
+mutation CreateSKill($input: [SkillCreateInput!]!) {
   createSkills(input: $input) {
     info {
       nodesCreated

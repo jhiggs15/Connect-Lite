@@ -18,12 +18,12 @@ export const createUserArgs = (email, name) => {
         name
     }]
 
-    return createArgs(input)
+    return createArgs({input})
 
 }
 
 export const createUser = gql`
-mutation Mutation($input: [UserCreateInput!]!) {
+mutation CreateUser($input: [UserCreateInput!]!) {
   createUsers(input: $input) {
     info {
       nodesCreated

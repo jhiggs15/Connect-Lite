@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import { FireOutlined, } from '@ant-design/icons';
 import { Card, Popconfirm, Rate } from 'antd';
 import { useAuth0 } from '@auth0/auth0-react';
-import { createUpsertSkillConnectionArgs } from '../../graphQLOps/mutation/upsertSkillConnection';
+import { createUpsertSkillConnectionArgs } from '../../../graphQLOps/mutation/upsertSkillConnection';
 
 
 export const Rating = ({shouldShowPopup, rating, setRating, connectUserAndSkill, skillName}) => {
