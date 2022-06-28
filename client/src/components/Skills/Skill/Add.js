@@ -9,6 +9,7 @@ import { disconnectSkill, disconnectSkillConnectionArgs } from '../../../graphQL
 
 const PopOverContent = ({skillName, setVisible, setHasAddedSkill, rating, setRating, connectUserAndSkill}) => {
   let {user} = useAuth0()
+  console.log(rating)
 
     return (
         <div style={{"display": "flex", "flexDirection" : "column",  }}>
@@ -39,7 +40,7 @@ export const Add = ({disconnectSkill, hasAddedSkill, setHasAddedSkill, rating, s
         <Popconfirm icon={null} title="Are you sure you want to remove this skill？" okText="Yes" cancelText="No" 
           onConfirm={async () => {
             setHasAddedSkill(false)
-            await disconnectSkill(disconnectSkillConnectionArgs(user.email, skillName))
+            disconnectSkill(disconnectSkillConnectionArgs(user.email, skillName))
           }}>
             <CheckCircleFilled style={{color : "green"}}/>
         </Popconfirm>

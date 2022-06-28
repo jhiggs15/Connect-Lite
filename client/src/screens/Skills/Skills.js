@@ -15,6 +15,9 @@ import { CreateSkillModal } from '../../components/Skills/Modals/CreateSkillModa
 import { EditSkillModal } from '../../components/Skills/Modals/EditSkillModal';
 import { updateSkill } from '../../graphQLOps/mutation/updateSkill';
 import { getSkillByUserArgs, getSkillsByUser } from '../../graphQLOps/queries/getSkillsByUser';
+import { disconnectSkill } from '../../graphQLOps/mutation/deleteSkillConnection';
+import { updateItem } from '../../graphQLOps/cacheOperations/update';
+import { addItem } from '../../graphQLOps/cacheOperations/add';
 
 
 const TopBar = ({setIsModalVisible}) => {
@@ -47,27 +50,100 @@ const TopBar = ({setIsModalVisible}) => {
 export const Skills = () => {
 
     const {user} = useAuth0()
-    const refetchQueries = {
-        refetchQueries : [{query : getAllSkills, variables: getAllSkillArgs(user.email)}, {query : getSkillsByUser, variables: getSkillByUserArgs(user.email)}]
-    }
 
-    const [connectUserAndSkill, { error: connectUserAndSkillError }] = useMutation(upsertSkillConnection, {refetchQueries : refetchQueries});
-    const { data : userSkillData, error: getSkillsByUserError } = useQuery(getAllSkills, getAllSkillArgs(user.email));
-    const [createSkillMutation, {error: createSkillError}] = useMutation(createSkill, {refetchQueries : refetchQueries})
-    const [updateSkillMutation, {error: updateSkillError}] = useMutation(updateSkill, {refetchQueries : refetchQueries})
+    const [connectUserAndSkill, { error: connectUserAndSkillError }] = useMutation(upsertSkillConnection, {
+        update: (cache, mutationResult, {variables, context}) => {
+           const skillAdded = variables.connect.skills[0].where.node.name
+           const ratingGiven = variables.connect.skills[0].edge.rating
+           let getAllSkillsData = []
+           cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                getAllSkillsData = updateItem(data.getAllSkills, "name", skillAdded, {attributes: ["rating"], values:[ratingGiven]})
+                return {getAllSkills: getAllSkillsData}
+            })
+
+           cache.updateQuery({query: getSkillsByUser, variables: getSkillByUserArgs(user.email).variables}, (data) => {
+                try{
+                    const mySkillItem = data.getMySkills.find(skillItem => skillItem.name === skillAdded)
+                    const allSkillItem = getAllSkillsData.find(skillItem => skillItem.name === skillAdded)
+                    if(mySkillItem) 
+                        return {getMySkills: updateItem(data.getMySkills, "name", skillAdded, {attributes: ["rating"], values:[ratingGiven]})}
+                    else 
+                        return {getMySkills: addItem(data.getMySkills, allSkillItem)}
+                } catch(error) {
+                    // if the home page hasnt been visited, and thus the query hasnt been executed
+                    return data
+                }
+            })
+
+
+    }
+    });
+    const [createSkillMutation, {error: createSkillError}] = useMutation(createSkill, {
+        update: (cache, mutationResult, {variables, context}) => {
+            let skill = variables.input[0]
+            skill.rating = null
+            cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                return {getAllSkills: addItem(data.getAllSkills, skill)}
+            })
+
+
+        }
+    })
+    const [updateSkillMutation, {error: updateSkillError}] = useMutation(updateSkill, {
+        update: (cache, mutationResult, {variables, context}) => {
+            let newSkill = variables.update
+            let oldSkillName = variables.where.name
+
+            cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                return {getAllSkills: updateItem(data.getAllSkills, "name", oldSkillName, 
+                    {attributes: ["name", "description", "imageURL"], values:[newSkill.name, newSkill.description, newSkill.imageURL]})}
+            })
+
+           cache.updateQuery({query: getSkillsByUser, variables: getSkillByUserArgs(user.email).variables}, (data) => {
+                try{
+                    const mySkillItem = data.getMySkills.find(skillItem => skillItem.name === newSkill.name)
+                    if(mySkillItem) 
+                        return {getAllSkills: updateItem(data.getAllSkills, "name", oldSkillName, 
+                            {attributes: ["name", "description", "imageURL"], values:[newSkill.name, newSkill.description, newSkill.imageURL]})}
+                    else return data
+                } catch(error) {
+                    // if the home page hasnt been visited, and thus the query hasnt been executed
+                    return data
+                }
+            })
+        }
+    })
+    const [disconnectUserAndSkill, {loading: disconnectUserAndSkillLoading, error: disconnectUserAndSkillError }] = useMutation(disconnectSkill, {
+        update: (cache, mutationResult, {variables, context}) => {
+            const skillDisconneceted = variables.disconnect.skills[0].where.node.name
+            cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                return {getAllSkills: updateItem(data.getAllSkills, "name", skillDisconneceted, {attributes:["rating"], values:[null]})}
+            })
+
+            cache.updateQuery({query: getSkillsByUser, variables: getSkillByUserArgs(user.email).variables}, (data) => {
+                try{
+                    return {getMySkills: removeItem(data.getMySkills, "name", skillDisconneceted)}
+                } catch(error){
+                    return data
+                }
+            })
+    }
+    });
+
+    const { data : userSkillData, error: getSkillsByUserError } = useQuery(getAllSkills, getAllSkillArgs(user.email), {fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first'})
 
     const [isModalVisible, setIsModalVisible] = useState("none");
     const [skillToEdit, setSkillToEdit] = useState({name: "", imageURL: "", description: ""})
 
 
     return (
-        <ApolloWrapper nullStates={[userSkillData]} errorStates={[connectUserAndSkillError, getSkillsByUserError, createSkillError, updateSkillError]} >
+        <ApolloWrapper nullStates={[userSkillData]} errorStates={[disconnectUserAndSkillError, connectUserAndSkillError, getSkillsByUserError, createSkillError, updateSkillError]} >
 
             <TopBar setIsModalVisible={setIsModalVisible} />
             <CreateSkillModal setIsModalVisible={setIsModalVisible} createSkillMutation={createSkillMutation} isModalVisible={isModalVisible} />
-            <EditSkillModal updateSkill={updateSkill} setIsModalVisible={setIsModalVisible} skillToEdit={skillToEdit} isModalVisible={isModalVisible} />
+            <EditSkillModal updateSkill={updateSkillMutation} setIsModalVisible={setIsModalVisible} skillToEdit={skillToEdit} isModalVisible={isModalVisible} />
 
-            <SkillList setIsModalVisible={setIsModalVisible} skillsData={userSkillData} connectUserAndSkill={connectUserAndSkill}  doesNotHaveRating={true} setSkillToEdit={setSkillToEdit}  />
+            <SkillList disconnectSkill={disconnectUserAndSkill} setIsModalVisible={setIsModalVisible} skillsData={userSkillData} connectUserAndSkill={connectUserAndSkill}  doesNotHaveRating={true} setSkillToEdit={setSkillToEdit}  />
 
         </ApolloWrapper>
 

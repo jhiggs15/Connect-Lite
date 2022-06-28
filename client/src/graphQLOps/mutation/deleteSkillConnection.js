@@ -37,9 +37,16 @@ export const disconnectSkillConnectionArgs = (email, skillName)=> {
 export const disconnectSkill = gql`
     mutation DisconnectSkill($disconnect: UserDisconnectInput, $where: UserWhere) {
     updateUsers(disconnect: $disconnect, where: $where) {
-        info {
-        relationshipsDeleted
+      users {
+        email
+        name
+        skills {
+          skillID
+          name
+          description
+          imageURL
         }
+      }
     }
     }
 `

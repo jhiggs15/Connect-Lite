@@ -20,10 +20,13 @@ export const EditSkillModal = ({setIsModalVisible, isModalVisible, skillToEdit, 
     return( 
         <Modal title="Edit Skill" okText={"Edit Skill"} visible={isModalVisible === "edit"} onCancel={() => setIsModalVisible("none")}
         onOk={async () => {
-            setIsModalVisible("none") 
-            await updateSkill(updateSkillArgs(oldSkillName, skillName, description, imageLink))
-            // TODO : change to edit skill
-            // await createSkillMutation(createSkillArgs(skillName, description, imageLink))
+            try{
+                updateSkill(updateSkillArgs(oldSkillName, skillName, description, imageLink))
+                setIsModalVisible("none") 
+            }
+            catch(error) {
+                console.log(error)
+            }
         }}
     >
         <Form>

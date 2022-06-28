@@ -11,7 +11,7 @@ export const ApolloWrapper = ({loadingStates, errorStates, nullStates, children}
     // TODO : add loading screen
     if (loadingStates && loadingStates.some(state => state)) return <Loading/>;
     // TODO add error screen
-    if (errorStates && errorStates.some(error => error)) return <Error error={errorStates.find(error => error !== null)}/>;
+    if (errorStates && errorStates.some(error => error)) return <Error error={errorStates.find(error => typeof error !== "undefined")}/>;
     return children
 
     

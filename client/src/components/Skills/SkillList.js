@@ -1,4 +1,4 @@
-import { Skill } from "./Skill/Skill"
+import { Skill } from "./Skill/Skill/Skill"
 import React, { useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import { Col, Row } from "antd";
@@ -18,7 +18,7 @@ export const SkillList = ({skillsData, connectUserAndSkill, disconnectSkill, set
     }
 
     return (
-        <Row gutter={[16, 16]} style={{margin: 0}} justify={leftAlign ? "start" : "center"} align={"middle"}>
+        <Row gutter={[16, 16]} style={{margin: 0, paddingTop: 10}} justify={leftAlign ? "start" : "center"} align={"middle"}>
             {convertUserSkills(skillsData)}
         </Row>
     )

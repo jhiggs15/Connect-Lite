@@ -14,8 +14,11 @@ export const createSkillArgs = (name, description, imageURL) => {
 export const createSkill = gql`
 mutation CreateSKill($input: [SkillCreateInput!]!) {
   createSkills(input: $input) {
-    info {
-      nodesCreated
+    skills {
+      name
+      skillID
+      description
+      imageURL
     }
   }
 }

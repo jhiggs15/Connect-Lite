@@ -2,11 +2,6 @@ import { gql } from '@apollo/client';
 import { createArgs } from '../createInputs';
 
 export const updateSkillArgs = (name, newName, newDescription, newImageURL) => {
-    const input = [{
-          name,
-          description,
-          imageURL
-    }]
     const where = {name}
     const update = {name: newName, description: newDescription, imageURL: newImageURL}
     return createArgs({where, update})

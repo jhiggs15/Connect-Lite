@@ -10,9 +10,13 @@ export const CreateSkillModal = ({setIsModalVisible, isModalVisible, createSkill
 
     return( 
         <Modal title="Create Skill" okText={"Create Skill"} visible={isModalVisible === "create"} onCancel={() => setIsModalVisible("none")}
-        onOk={async () => {
-            setIsModalVisible("none") 
-            await createSkillMutation(createSkillArgs(skillName, description, imageLink))
+        onOk={() => {
+            try{
+                createSkillMutation(createSkillArgs(skillName, description, imageLink))
+                setIsModalVisible("none") 
+            } catch(error) {
+                console.log(error)
+            }
         }}
     >
         <Form>

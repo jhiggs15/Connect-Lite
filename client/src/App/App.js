@@ -15,7 +15,6 @@ import { CustomSider } from '../components/CustomAnt/CustomSider/CustomSider';
 import { Redirect } from '../screens/Loading/Redirect';
 import { Authentication } from '../screens/Authentication/Authentication';
 import { Loading } from '../screens/Loading/Loading';
-import { MySkills } from '../screens/Skills/MySkills';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
@@ -35,7 +34,7 @@ const authLink = setContext((_, { headers }) => {
 
 const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
 // A wrapper for routes that limits specific wraps to authenticated users only
@@ -55,7 +54,8 @@ const RequireAuth = ({ component }) => {
 const Auth0RedirectCallback = ({ children, ...props }) => {
     const navigate = useNavigate();
     const onRedirectCallback = (appState) => {
-        navigate(`/auth${(appState && appState.returnTo) || window.location.pathname}`)
+        if(localStorage.getItem("token")) navigate((appState && appState.returnTo) || window.location.pathname)
+        else navigate(`/auth${(appState && appState.returnTo) || window.location.pathname}`)
     };
     return (
         <Auth0Provider onRedirectCallback={onRedirectCallback} {...props}>

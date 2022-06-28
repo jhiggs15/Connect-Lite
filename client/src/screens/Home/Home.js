@@ -10,6 +10,10 @@ import { getSkillsByUser, getSkillByUserArgs } from '../../graphQLOps/queries/ge
 import { useAuth0 } from '@auth0/auth0-react';
 import { disconnectSkill } from '../../graphQLOps/mutation/deleteSkillConnection';
 import { getAllSkillArgs, getAllSkills } from '../../graphQLOps/queries/getAllSkills';
+import { removeItem } from '../../graphQLOps/cacheOperations/remove';
+import { updateItem } from '../../graphQLOps/cacheOperations/update';
+import { updateSkill } from '../../graphQLOps/mutation/updateSkill';
+import { EditSkillModal } from '../../components/Skills/Modals/EditSkillModal';
 
 
 
@@ -17,16 +21,80 @@ export const Home = () => {
 
     let {user} = useAuth0()
 
-    const refetchQueries = {
-        refetchQueries : [{query : getAllSkills, variables: getAllSkillArgs(user.email)}, {query : getSkillsByUser, variables: getSkillByUserArgs(user.email)}]
-    }
-    const [connectUserAndSkill, {loading: connectUserAndSkillLoading, error: connectUserAndSkillError }] = useMutation(upsertSkillConnection, {refetchQueries : refetchQueries});
-    const [disconnectUserAndSkill, {loading: disconnectUserAndSkillLoading, error: disconnectUserAndSkillError }] = useMutation(disconnectSkill, {refetchQueries : refetchQueries});
-    const { data : userSkillData, loading: getSkillsByUserLoading, error: getSkillsByUserError } = useQuery(getSkillsByUser, getSkillByUserArgs(user.email));
+    const [disconnectUserAndSkill, {loading: disconnectUserAndSkillLoading, error: disconnectUserAndSkillError }] = useMutation(disconnectSkill, {
+        update: (cache, mutationResult, {variables, context}) => {
+            const skillDisconneceted = variables.disconnect.skills[0].where.node.name
 
+            cache.updateQuery({query: getSkillsByUser, variables: getSkillByUserArgs(user.email).variables}, (data) => {
+                return {getMySkills: removeItem(data.getMySkills, "name", skillDisconneceted)}
+            })
+
+            cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                try {
+                    return {getAllSkills: updateItem(data.getAllSkills, "name", skillDisconneceted, {attributes:["rating"], values:[null]})}
+                }
+                catch(error) {
+                    return data
+                }
+            })
+    }
+    });
+
+    const [connectUserAndSkill, { error: connectUserAndSkillError }] = useMutation(upsertSkillConnection, {
+        update: (cache, mutationResult, {variables, context}) => {
+           const skillAdded = variables.connect.skills[0].where.node.name
+           const ratingGiven = variables.connect.skills[0].edge.rating
+           let getAllSkillsData = []
+           cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                try{
+                    return {getAllSkills: updateItem(data.getAllSkills, "name", skillAdded, {attributes: ["rating"], values:[ratingGiven]})}
+                } catch(error) {
+                    return data
+                }
+
+
+            })
+
+           cache.updateQuery({query: getSkillsByUser, variables: getSkillByUserArgs(user.email).variables}, (data) => {
+                return {getMySkills: updateItem(data.getMySkills, "name", skillAdded, {attributes: ["rating"], values:[ratingGiven]})}
+
+            })
+
+
+    }
+    });
+
+    const [updateSkillMutation, {error: updateSkillError}] = useMutation(updateSkill, {
+        update: (cache, mutationResult, {variables, context}) => {
+            let newSkill = variables.update
+            let oldSkillName = variables.where.name
+
+            cache.updateQuery({query: getAllSkills, variables: getAllSkillArgs(user.email).variables}, (data) => {
+                try{
+                    return {getAllSkills: updateItem(data.getAllSkills, "name", oldSkillName, 
+                        {attributes: ["name", "description", "imageURL"], values:[newSkill.name, newSkill.description, newSkill.imageURL]})}
+                } catch(error) {
+                    return data
+                }
+
+            })
+
+           cache.updateQuery({query: getSkillsByUser, variables: getSkillByUserArgs(user.email).variables}, (data) => {
+                return {getMySkills: updateItem(data.getMySkills, "name", oldSkillName, 
+                    {attributes: ["name", "description", "imageURL"], values:[newSkill.name, newSkill.description, newSkill.imageURL]})}
+
+            })
+        }
+    })
+
+    const { data : userSkillData, loading: getSkillsByUserLoading, error: getSkillsByUserError,  } = useQuery(getSkillsByUser, getSkillByUserArgs(user.email), {fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first'});
+
+
+    const [isModalVisible, setIsModalVisible] = useState("none");
+    const [skillToEdit, setSkillToEdit] = useState({name: "", imageURL: "", description: ""})
 
     return (
-        <ApolloWrapper nullStates={[userSkillData]} errorStates={[connectUserAndSkillError, getSkillsByUserError]}  >
+        <ApolloWrapper nullStates={[userSkillData]} errorStates={[updateSkillError, getSkillsByUserError, connectUserAndSkillError]}  >
             <div style={{"display" : "flex", "justifyContent" : "flex-start", "padding" : 10 }}>
 
             </div>
@@ -42,9 +110,8 @@ export const Home = () => {
 
 
             <h1 className='title' style={{color: "#001529", alignSelf: "flex-start"}}>My Skills</h1>
- 
-            <SkillList leftAlign skillsData={userSkillData} connectUserAndSkill={connectUserAndSkill} disconnectSkill={disconnectUserAndSkill} />
-            {/* <EditSkillModal updateSkill={updateSkill} setIsModalVisible={setIsModalVisible} skillToEdit={skillToEdit} isModalVisible={isModalVisible} /> */}
+            <EditSkillModal updateSkill={updateSkillMutation} setIsModalVisible={setIsModalVisible} skillToEdit={skillToEdit} isModalVisible={isModalVisible} />
+            <SkillList setIsModalVisible={setIsModalVisible} setSkillToEdit={setSkillToEdit} leftAlign skillsData={userSkillData} connectUserAndSkill={connectUserAndSkill} disconnectSkill={disconnectUserAndSkill} />
         </ApolloWrapper>
 
     )

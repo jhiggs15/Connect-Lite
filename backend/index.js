@@ -31,6 +31,7 @@ const server = new ApolloServer({
     schema: neoSchema,
     cache: "bounded",
     csrfPrevention: true,
+    formatError: (error) => error, 
     context: ({ req }) => ({ req })
 });
 
