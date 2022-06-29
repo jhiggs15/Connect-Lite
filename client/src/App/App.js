@@ -90,14 +90,13 @@ export const App = () => {
                                     <Route path="/skills" element={<RequireAuth component={Skills} />} />
                                 </Routes>
 
-                                <Footer>
-                                    <h4>Forward Motion Program Summer 2022</h4>
-                                    <h5>Created by John Higgins at Jahnel Group</h5>
-                                </Footer>
+
                             </Layout>
 
 
+
                         </Layout>
+
                     </Layout>
 
                 </Auth0RedirectCallback>

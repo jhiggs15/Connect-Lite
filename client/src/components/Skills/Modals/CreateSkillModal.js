@@ -21,10 +21,10 @@ export const CreateSkillModal = ({setIsModalVisible, isModalVisible, createSkill
     >
         <Form>
             <Form.Item label={"Skill Name"}>
-                <Input onChange={changeData => setSkillName(changeData.target.value)} placeholder="HTML" />
+                <Input showCount maxLength={40} onChange={changeData => setSkillName(changeData.target.value)} placeholder="HTML" />
             </Form.Item>
             <Form.Item label={"Description"}>
-                <Input onChange={changeData => setDescription(changeData.target.value)} placeholder="HTML is a awesome langauge" />
+                <Input showCount maxLength={200} onChange={changeData => setDescription(changeData.target.value)} placeholder="HTML is a awesome langauge" />
             </Form.Item>
             <Form.Item label={"Icon"}>
                 <Input onChange={changeData => setImageLink(changeData.target.value)} placeholder="https://link.com/html.png" />

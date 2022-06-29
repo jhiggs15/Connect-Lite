@@ -32,10 +32,10 @@ export const EditSkillModal = ({setIsModalVisible, isModalVisible, skillToEdit, 
         <Form>
             {/* TODO : chagne these to have the values passed in initially and to be able to change them */}
             <Form.Item label={"Skill Name"}>
-                <Input  value={skillName} onChange={changeData => setSkillName(changeData.target.value)} placeholder="HTML" />
+                <Input showCount maxLength={40}  value={skillName} onChange={changeData => setSkillName(changeData.target.value)} placeholder="HTML" />
             </Form.Item>
-            <Form.Item label={"Description"}>
-                <Input  value={description} onChange={changeData => setDescription(changeData.target.value)} placeholder="HTML is a awesome langauge" />
+            <Form.Item  label={"Description"}>
+                <Input showCount maxLength={200}  value={description} onChange={changeData => setDescription(changeData.target.value)} placeholder="HTML is a awesome langauge" />
             </Form.Item>
             <Form.Item label={"Icon"}>
                 <Input value={imageLink} onChange={changeData => setImageLink(changeData.target.value)} placeholder="https://link.com/html.png" />

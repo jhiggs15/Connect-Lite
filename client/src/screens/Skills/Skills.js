@@ -1,6 +1,5 @@
 import { Button, Form, Image, Input, Modal, Tooltip } from 'antd';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import { ApolloWrapper } from '../../components/ApolloWrapper/ApolloWrappers';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
@@ -20,13 +19,13 @@ import { updateItem } from '../../graphQLOps/cacheOperations/update';
 import { addItem } from '../../graphQLOps/cacheOperations/add';
 
 
-const TopBar = ({setIsModalVisible}) => {
+const TopBar = ({setSearchLoading, setIsModalVisible, searchTerm, setSearchTerm}) => {
     let {user} = useAuth0()
 
     if(user) {
         return(
             <div style={{display: "flex", flexDirection : "row"}}>
-                <Search placeholder="search skill name" />
+                <Search value={searchTerm} placeholder="search skill name" onChange={(event) =>{setSearchTerm(event.target.value); setSearchLoading(true)} } />
                 {user.hasOwnProperty("https://Connect-Lite-Roles.com/Role") ? 
                     <div style={{alignSelf : "flex-end", marginLeft: 20, marginRight: 10}}>
                         <Tooltip  title="Add Skill">
@@ -130,22 +129,42 @@ export const Skills = () => {
     }
     });
 
-    const { data : userSkillData, error: getSkillsByUserError } = useQuery(getAllSkills, getAllSkillArgs(user.email), {fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first'})
+    let { data : userSkillData, error: getSkillsByUserError } = useQuery(getAllSkills, getAllSkillArgs(user.email), {fetchPolicy: 'network-only', nextFetchPolicy: 'cache-first'})
 
     const [isModalVisible, setIsModalVisible] = useState("none");
     const [skillToEdit, setSkillToEdit] = useState({name: "", imageURL: "", description: ""})
+    const [searchTerm, setSearchTerm] = useState("")
+    const [searchLoading, setSearchLoading] = useState(false)
+    const [searchResults, setSearchResults] = useState("none")
+
+    useEffect(() => {
+        if(searchTerm === ""){
+            setSearchLoading(false)
+            setSearchResults("none")
+        } 
+        else{
+            setSearchResults({getAllSkills: userSkillData.getAllSkills.filter(value => value.name.includes(searchTerm))})
+            setSearchLoading(false)
+        }
+
+
+    }, [searchTerm])
 
 
     return (
-        <ApolloWrapper nullStates={[userSkillData]} errorStates={[disconnectUserAndSkillError, connectUserAndSkillError, getSkillsByUserError, createSkillError, updateSkillError]} >
+        <>
+            <TopBar setSearchLoading={setSearchLoading} setIsModalVisible={setIsModalVisible} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <ApolloWrapper nullStates={[userSkillData]} loadingStates={[searchLoading]} errorStates={[disconnectUserAndSkillError, connectUserAndSkillError, getSkillsByUserError, createSkillError, updateSkillError]} >
+                <CreateSkillModal setIsModalVisible={setIsModalVisible} createSkillMutation={createSkillMutation} isModalVisible={isModalVisible} />
+                <EditSkillModal updateSkill={updateSkillMutation} setIsModalVisible={setIsModalVisible} skillToEdit={skillToEdit} isModalVisible={isModalVisible} />
 
-            <TopBar setIsModalVisible={setIsModalVisible} />
-            <CreateSkillModal setIsModalVisible={setIsModalVisible} createSkillMutation={createSkillMutation} isModalVisible={isModalVisible} />
-            <EditSkillModal updateSkill={updateSkillMutation} setIsModalVisible={setIsModalVisible} skillToEdit={skillToEdit} isModalVisible={isModalVisible} />
+                <SkillList disconnectSkill={disconnectUserAndSkill} setIsModalVisible={setIsModalVisible} skillsData={ searchResults === "none" ? userSkillData: searchResults} connectUserAndSkill={connectUserAndSkill}  doesNotHaveRating={true} setSkillToEdit={setSkillToEdit}  />
 
-            <SkillList disconnectSkill={disconnectUserAndSkill} setIsModalVisible={setIsModalVisible} skillsData={userSkillData} connectUserAndSkill={connectUserAndSkill}  doesNotHaveRating={true} setSkillToEdit={setSkillToEdit}  />
+            </ApolloWrapper>
+        </>
 
-        </ApolloWrapper>
+
+
 
     )
 }

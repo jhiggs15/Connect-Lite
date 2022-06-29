@@ -56,7 +56,7 @@ export const Skill = ({skillData, hasAdded, connectUserAndSkill, disconnectSkill
         <>
             <Card style={{ width: 280, padding : 10}} cover={<Image alt={skillData.name + " image"} width={200} height={200} src={skillData.imageURL} preview={false} fallback={scaryLink}/>}
                 actions = {getActions()}>
-                <Meta title={skillData.name} description={skillData.description}  style={{}}/>
+                <Meta title={skillData.name} description={skillData.description}  style={{textOverflow: true}}/>
             </Card>
         </>
 
